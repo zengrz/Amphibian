@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CudaCompile Include="String.cu" />
+    <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="Hasher.cu" />
+    <CudaCompile Include="Tests\MapTest.cu" />
+    <CudaCompile Include="Tests\SetTest.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="String.cuh" />
+    <ClInclude Include="Hasher.cuh" />
+    <ClInclude Include="LinkedList.cuh" />
+    <ClInclude Include="Set.cuh" />
+    <ClInclude Include="Map.cuh" />
+    <ClInclude Include="Tests\MapTest.cuh" />
+    <ClInclude Include="Tests\SetTest.cuh" />
+  </ItemGroup>
+</Project>

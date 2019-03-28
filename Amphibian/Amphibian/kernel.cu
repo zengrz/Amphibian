@@ -22,14 +22,16 @@ void check(T err, const char* const func, const char* const file, const int line
 __global__ void TestKernel()
 {
    SetTest::SetTest setTest;
-   //setTest.TestIntBasic();
-   //setTest.TestInt();
-   //setTest.TestInt2();
-   //setTest.TestString();
+   setTest.TestIntBasic();
+   setTest.TestInt();
+   setTest.TestInt2();
+   setTest.TestString();
    setTest.TestSetOfSetOfString();
 
-   //MapTest::MapTest mapTest;
-   //mapTest.TestMapOfMap();
+   MapTest::MapTest mapTest;
+   mapTest.TestInteger();
+   mapTest.TestString();
+   mapTest.TestMapOfMap();
 }
 
 struct CompareDouble
@@ -42,7 +44,7 @@ struct CompareDouble
 int main()
 {
    //printf("%d\n", sizeof(CompareDouble));
-   TestKernel << <1, 1 >> > ();
+   TestKernel<<<1, 1>>> ();
    checkCudaErrors(cudaDeviceSynchronize());
    checkCudaErrors(cudaGetLastError());
 

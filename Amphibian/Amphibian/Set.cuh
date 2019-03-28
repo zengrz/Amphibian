@@ -42,7 +42,6 @@ namespace Set
       __host__ __device__ void Remove(T&);
       __host__ __device__ void RemoveAll();
       //__host__ __device__ LinkedList::Node<T>* AsList();
-      
 
    private:
       __host__ __device__ LinkedList::Node<T>* GetBucket(int);
@@ -152,7 +151,7 @@ namespace Set
    template<typename T, typename TCompare, typename THasher>
    __host__ __device__ bool Set<T, TCompare, THasher>::Exists(T& v)
    {
-      return LinkedList::Exists<T, TCompare>(buckets[GetBucketIdx(v)], v, cmp);
+      return LinkedList::Exists<T, TCompare>(buckets[GetBucketIdx(v)], v);
    }
 
    template<typename T, typename TCompare, typename THasher>
@@ -192,7 +191,7 @@ namespace Set
       unsigned int res = 0;
 
       for (int k = 0; k < NUM_BUCKETS; ++k) {
-         res += LinkedList::HashCode(buckets[k], hasher);
+         res += LinkedList::HashCode<T, THasher>(buckets[k]);
       }
 
       return res;
@@ -213,7 +212,7 @@ namespace Set
    template<typename T, typename TCompare, typename THasher>
    __host__ __device__ void Set<T, TCompare, THasher>::Remove(T& v)
    {
-      LinkedList::Remove(&buckets[GetBucketIdx(v)], v, cmp);
+      LinkedList::Remove<T, TCompare>(&buckets[GetBucketIdx(v)], v);
    }
 
    template<typename T, typename TCompare, typename THasher>
@@ -237,14 +236,6 @@ namespace Set
    //   }
    //   return res;
    //}
-
-   template<typename T, typename TCompare, typename THasher>
-   struct SetCompare
-   {
-      __host__ __device__ inline bool operator() (Set<T, TCompare, THasher>& lhs, Set<T, TCompare, THasher>& rhs) {
-         return lhs == rhs;
-      }
-   };
 
    template<typename T, typename TCompare, typename THasher>
    class Iterator

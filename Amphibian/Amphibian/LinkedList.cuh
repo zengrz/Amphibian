@@ -13,7 +13,6 @@ namespace LinkedList
    class Node
    {
    public:
-      typedef bool(*pCmp)(T&, T&);
       __host__ __device__ Node();
       __host__ __device__ Node(T&, Node*);
 
@@ -142,8 +141,9 @@ namespace LinkedList
    }
 
    template<typename T, typename TCompare>
-   __host__ __device__ T Remove(Node<T>** head, T& k, TCompare& cmp)
+   __host__ __device__ T Remove(Node<T>** head, T& k)
    {
+      TCompare cmp;
       while (*head != NULL) {
          auto tmpK = (*head)->GetValue();
          if (cmp(tmpK, k)) {
@@ -159,10 +159,10 @@ namespace LinkedList
    }
 
    template<typename T, typename TCompare>
-   __host__ __device__ bool Exists(Node<T> * head, T& target, TCompare& cmp)
+   __host__ __device__ bool Exists(Node<T> * head, T& target)
    {
+      TCompare cmp;
       while (head != NULL) {
-         printf("LinkedList::Exists1\n");
          auto tmpV = head->GetValue();
          if (cmp(tmpV, target)) {
             return true;
@@ -215,8 +215,9 @@ namespace LinkedList
    }
 
    template<typename T, typename THasher>
-   __host__ __device__ unsigned int HashCode(Node<T>* list, THasher hasher)
+   __host__ __device__ unsigned int HashCode(Node<T>* list)
    {
+      THasher hasher;
       unsigned int res = 0;
       while (list != NULL) {
          auto v = list->GetValue();
@@ -238,12 +239,11 @@ namespace LinkedListKV
 
       __host__ __device__ Node& operator=(const Node&);
 
-      __host__ __device__ KeyT GetKey();
-      __host__ __device__ ValueT GetValue();
+      __host__ __device__ KeyT& GetKey();
+      __host__ __device__ ValueT& GetValue();
       __host__ __device__ Node* GetNext();
       __host__ __device__ Node** GetNextAddr();
       __host__ __device__ void UpdateNext(Node* newNext);
-      __host__ __device__ unsigned int HashCode(Hasher::pHasher);
       __host__ __device__ void MapVal(ValueT&, ValueT(*mapper)(ValueT&, ValueT&));
 
    private:
@@ -271,13 +271,13 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ KeyT Node<KeyT, ValueT>::GetKey()
+   __host__ __device__ KeyT& Node<KeyT, ValueT>::GetKey()
    {
       return key;
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ ValueT Node<KeyT, ValueT>::GetValue()
+   __host__ __device__ ValueT& Node<KeyT, ValueT>::GetValue()
    {
       return val;
    }
@@ -301,26 +301,22 @@ namespace LinkedListKV
    }
 
    template<typename KeyT, typename ValueT>
-   __host__ __device__ unsigned int Node<KeyT, ValueT>::HashCode(Hasher::pHasher hasher)
-   {
-      unsigned int res = 0;
-      res += hasher((char*)&key, sizeof(key));
-      res += hasher((char*)&val, sizeof(val));
-      return res;
-   }
-
-   template<typename KeyT, typename ValueT>
    __host__ __device__ void Node<KeyT, ValueT>::MapVal(ValueT& v, ValueT(*mapper)(ValueT&, ValueT&))
    {
       val = mapper(v, val);
    }
 
-   template<typename KeyT, typename ValueT>
-   __host__ __device__ unsigned int HashCode(Node<KeyT, ValueT>* list, Hasher::pHasher hasher)
+   template<typename KeyT, typename ValueT, typename KHasher, typename VHasher>
+   __host__ __device__ unsigned int HashCode(Node<KeyT, ValueT>* list)
    {
+      KHasher khasher;
+      VHasher vhasher;
       unsigned int res = 0;
       while (list != NULL) {
-         res += list->HashCode(hasher);
+         auto k = list->GetKey();
+         auto v = list->GetValue();
+         res += khasher(k);
+         res += vhasher(v);
          list = list->GetNext();
       }
       return res;
@@ -380,12 +376,13 @@ namespace LinkedListKV
       return RemoveHead(head, v);
    }
 
-   template<typename KeyT, typename ValueT>
-   __host__ __device__ bool Remove(Node<KeyT, ValueT>** head, KeyT& k, ValueT& ret, bool equals(KeyT&, KeyT&))
+   template<typename KeyT, typename ValueT, typename KCompare>
+   __host__ __device__ bool Remove(Node<KeyT, ValueT>** head, KeyT& k, ValueT& ret)
    {
+      KCompare kcmp;
       while (*head != NULL) {
          auto tmpK = (*head)->GetKey();
-         if (equals(tmpK, k)) {
+         if (kcmp(tmpK, k)) {
             ValueT ret;
             RemoveHead(head, ret);
             return true;
@@ -397,12 +394,13 @@ namespace LinkedListKV
       return false;
    }
 
-   template<typename KeyT, typename ValueT>
-   __host__ __device__ bool GetValue(Node<KeyT, ValueT>* head, KeyT& target, ValueT& ret, bool equalKeys(KeyT&, KeyT&))
+   template<typename KeyT, typename ValueT, typename KCompare>
+   __host__ __device__ bool GetValue(Node<KeyT, ValueT>* head, KeyT& target, ValueT& ret)
    {
+      KCompare kcmp;
       while (head != NULL) {
          auto v = head->GetKey();
-         if (equalKeys(v, target)) {
+         if (kcmp(v, target)) {
             ret = head->GetValue();
             return true;
          }
@@ -411,11 +409,12 @@ namespace LinkedListKV
       return false;
    }
 
-   template<typename KeyT, typename ValueT>
-   __host__ __device__ bool ContainsKey(Node<KeyT, ValueT>* head, KeyT& k, bool(*equalKeys)(KeyT&, KeyT&))
+   template<typename KeyT, typename ValueT, typename KCompare>
+   __host__ __device__ bool ContainsKey(Node<KeyT, ValueT>* head, KeyT& k)
    {
+      KCompare kcmp;
       ValueT v;
-      return GetValue(head, k, v, equalKeys);
+      return GetValue<KeyT, ValueT, KCompare>(head, k, v);
    }
 
    //template<typename KeyT, typename ValueT>
@@ -521,6 +520,5 @@ namespace LinkedListKV
 //      }
 //   }
 //}
-
 
 #endif

@@ -1,30 +1,30 @@
-//#ifndef _MAP_TEST_CUH_
-//#define _MAP_TEST_CUH_
-//
-//#include <cuda_runtime.h>
-//
-//#include "..\Hasher.cuh"
-//#include "..\Map.cuh"
-//
-//namespace MapTest
-//{
-//   class MapTest
-//   {
-//   public:
-//      __device__ MapTest();
-//      __device__ void TestInteger();
-//      __device__ void TestString();
-//      __device__ void TestMapOfMap();
-//
-//      template<typename K, typename V>
-//      __device__ Map::Map<K, V> CreateMapA(Map::Map<K, V>::pKeyCmp kcmp, Map::Map<K, V>::pValCmp vcmp, K k, V v)
-//      {
-//         Map::Map<K, V> m1(kcmp, vcmp);
-//         m1.Put(k, v);
-//
-//         return m1;
-//      }
-//   };
-//}
-//
-//#endif
+#ifndef _MAP_TEST_CUH_
+#define _MAP_TEST_CUH_
+
+#include <cuda_runtime.h>
+
+#include "..\Hasher.cuh"
+#include "..\Map.cuh"
+
+namespace MapTest
+{
+   class MapTest
+   {
+   public:
+      __device__ MapTest();
+      __device__ void TestInteger();
+      __device__ void TestString();
+      __device__ void TestMapOfMap();
+
+      template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
+      __device__ Map::Map<K, V, KCompare, VCompare, KHasher, VHasher> CreateMapA(K& k, V& v)
+      {
+         Map::Map<K, V, KCompare, VCompare, KHasher, VHasher> m1;
+         m1.Put(k, v);
+
+         return m1;
+      }
+   };
+}
+
+#endif

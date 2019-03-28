@@ -184,17 +184,17 @@ namespace SetTest
 
       int c2 = 0;
       Set::Iterator<String::String, String::Compare, String::HashFch> itr2(set2);
-      while (itr2.HasNext()) {
-         //printf("%s ", itr2.GetValue().Get());
-         ++c2;
-         itr2.Next();
-      }
-      //printf("\n");
-      if (c2 != set2.Size()) {
-         printf("different sizes: (%d, %d)", c2, set2.Size());
-      }
+while (itr2.HasNext()) {
+   //printf("%s ", itr2.GetValue().Get());
+   ++c2;
+   itr2.Next();
+}
+//printf("\n");
+if (c2 != set2.Size()) {
+   printf("different sizes: (%d, %d)", c2, set2.Size());
+}
 
-      printf("SetTest::TestString() completed.\n");
+printf("SetTest::TestString() completed.\n");
    }
 
    class ClassSet
@@ -225,7 +225,7 @@ namespace SetTest
          //   itr1.Next();
          //}
          //printf("\n");
-         printf("ClassSetCompare\n");
+         //printf("ClassSetCompare\n");
          return lhs.GetSet() == rhs.GetSet();
       }
    };
@@ -252,36 +252,40 @@ namespace SetTest
       Set::Set<ClassSet, ClassSetCompare, ClassSetHash> scs;
       scs.Put(cs0);
       scs.Put(cs1);
-      printf("scs: %d\n", scs.Size());
+      //printf("scs: %d\n", scs.Size());
 
       Set::Iterator<ClassSet, ClassSetCompare, ClassSetHash> itr1(scs);
       while (itr1.HasNext()) {
          auto cstmp = itr1.GetValue();
-         printf("itr1: %d\n", cstmp.GetSet().Size());
+         //printf("itr1: %d\n", cstmp.GetSet().Size());
 
          auto tmpset = cstmp.GetSet();
          Set::Iterator<String::String, String::Compare, String::HashFch> itr2(tmpset);
          while (itr2.HasNext()) {
-            printf("%s ", itr2.GetValue().Get());
+            //printf("%s ", itr2.GetValue().Get());
             itr2.Next();
          }
-         printf("\n");
+         //printf("\n");
          itr1.Next();
       }
 
       Set::Set<String::String, String::Compare, String::HashFch> set2(set0);
       ClassSet cs2(set2);
       auto tmpset = cs2.GetSet();
-      printf("cs2: %d\n", tmpset.Size());
+      //printf("cs2: %d\n", tmpset.Size());
       Set::Iterator<String::String, String::Compare, String::HashFch> itr(tmpset);
       while (itr.HasNext()) {
-         printf("%s ", itr.GetValue().Get());
+         //printf("%s ", itr.GetValue().Get());
          itr.Next();
       }
-      printf("\n");
+      //printf("\n");
 
-      if (scs.Exists(cs2)) {
-         printf("yay\n");
+      if (!scs.Exists(cs2)) {
+         printf("failed to check for existence by value\n");
+      }
+
+      if (scs.HashCode() != 2147483668) {
+         printf("hash codes not equal: %u %u", scs.HashCode(), 2147483668);
       }
 
       printf("SetTest::TestSetOfSetOfString() completed.\n");

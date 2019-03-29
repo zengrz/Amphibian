@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "Tests\HasherTest.cuh"
+#include "Tests\LinkedListTest.cuh"
 #include "Tests\MapTest.cuh"
 #include "Tests\SetTest.cuh"
 
@@ -21,6 +23,14 @@ void check(T err, const char* const func, const char* const file, const int line
 
 __global__ void TestKernel()
 {
+   printf("INT_MIN %d\n", INT_MIN);
+   printf("INT_MAX %d\n", INT_MAX);
+
+   HasherTest::TestOne();
+
+   LinkedListTest::LinkedListTest lltest;
+   lltest.TestAddAllAsSet();
+
    SetTest::SetTest setTest;
    setTest.TestIntBasic();
    setTest.TestInt();

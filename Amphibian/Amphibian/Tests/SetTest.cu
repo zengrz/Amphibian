@@ -137,7 +137,7 @@ namespace SetTest
 
    __device__ void SetTest::TestString()
    {
-      Set::Set<String::String, String::Compare, String::HashFch> set;
+      Set::Set<String::String, String::CompareFcn, String::HashFcn> set;
 
       String::String a("a");
       String::String b("b");
@@ -145,7 +145,7 @@ namespace SetTest
       String::String a3("a");
       String::String abc("abc");
 
-      String::Compare cmp;
+      String::CompareFcn cmp;
       if (cmp(a, b)) {
          printf("wrong: %s, %s\n", a.Get(), b.Get());
       }
@@ -168,7 +168,7 @@ namespace SetTest
          printf("exists: %s\n", d.Get());
       }
 
-      Set::Iterator<String::String, String::Compare, String::HashFch> itr(set);
+      Set::Iterator<String::String, String::CompareFcn, String::HashFcn> itr(set);
       while (itr.HasNext()) {
          //printf("%s ", itr.GetValue().Get());
          itr.Next();
@@ -183,7 +183,7 @@ namespace SetTest
       }
 
       int c2 = 0;
-      Set::Iterator<String::String, String::Compare, String::HashFch> itr2(set2);
+      Set::Iterator<String::String, String::CompareFcn, String::HashFcn> itr2(set2);
 while (itr2.HasNext()) {
    //printf("%s ", itr2.GetValue().Get());
    ++c2;
@@ -201,11 +201,11 @@ printf("SetTest::TestString() completed.\n");
    {
    public:
       __host__ __device__ ClassSet() {}
-      __host__ __device__ ClassSet(Set::Set<String::String, String::Compare, String::HashFch>& s) : s(s) {}
-      __host__ __device__ Set::Set<String::String, String::Compare, String::HashFch>& GetSet() { return s; }
+      __host__ __device__ ClassSet(Set::Set<String::String, String::CompareFcn, String::HashFcn>& s) : s(s) {}
+      __host__ __device__ Set::Set<String::String, String::CompareFcn, String::HashFcn>& GetSet() { return s; }
 
    private:
-      Set::Set<String::String, String::Compare, String::HashFch> s;
+      Set::Set<String::String, String::CompareFcn, String::HashFcn> s;
    };
 
    struct ClassSetCompare
@@ -213,13 +213,13 @@ printf("SetTest::TestString() completed.\n");
       __host__ __device__ inline bool operator() (ClassSet& lhs, ClassSet& rhs)
       {
          //auto s0 = lhs.GetSet(), s1 = rhs.GetSet();
-         //Set::Iterator<String::String, String::Compare> itr0(s0);
+         //Set::Iterator<String::String, String::CompareFcn> itr0(s0);
          //while (itr0.HasNext()) {
          //   printf("%s ", itr0.GetValue().Get());
          //   itr0.Next();
          //}
          //printf("\n");
-         //Set::Iterator<String::String, String::Compare> itr1(s1);
+         //Set::Iterator<String::String, String::CompareFcn> itr1(s1);
          //while (itr1.HasNext()) {
          //   printf("%s ", itr1.GetValue().Get());
          //   itr1.Next();
@@ -240,7 +240,7 @@ printf("SetTest::TestString() completed.\n");
 
    __device__ void SetTest::TestSetOfSetOfString()
    {
-      Set::Set<String::String, String::Compare, String::HashFch> set0, set1;
+      Set::Set<String::String, String::CompareFcn, String::HashFcn> set0, set1;
       String::String str0 = "A", str1 = "B", str2 = "C";
       set0.Put(str0);
       set0.Put(str1);
@@ -260,7 +260,7 @@ printf("SetTest::TestString() completed.\n");
          //printf("itr1: %d\n", cstmp.GetSet().Size());
 
          auto tmpset = cstmp.GetSet();
-         Set::Iterator<String::String, String::Compare, String::HashFch> itr2(tmpset);
+         Set::Iterator<String::String, String::CompareFcn, String::HashFcn> itr2(tmpset);
          while (itr2.HasNext()) {
             //printf("%s ", itr2.GetValue().Get());
             itr2.Next();
@@ -269,11 +269,11 @@ printf("SetTest::TestString() completed.\n");
          itr1.Next();
       }
 
-      Set::Set<String::String, String::Compare, String::HashFch> set2(set0);
+      Set::Set<String::String, String::CompareFcn, String::HashFcn> set2(set0);
       ClassSet cs2(set2);
       auto tmpset = cs2.GetSet();
       //printf("cs2: %d\n", tmpset.Size());
-      Set::Iterator<String::String, String::Compare, String::HashFch> itr(tmpset);
+      Set::Iterator<String::String, String::CompareFcn, String::HashFcn> itr(tmpset);
       while (itr.HasNext()) {
          //printf("%s ", itr.GetValue().Get());
          itr.Next();
@@ -285,7 +285,7 @@ printf("SetTest::TestString() completed.\n");
       }
 
       if (scs.HashCode() != 2147483668) {
-         printf("hash codes not equal: %u %u", scs.HashCode(), 2147483668);
+         printf("hash codes not equal: %u %u\n", scs.HashCode(), 2147483668);
       }
 
       printf("SetTest::TestSetOfSetOfString() completed.\n");

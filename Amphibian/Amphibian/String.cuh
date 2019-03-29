@@ -30,6 +30,8 @@ namespace String
       __host__ __device__ char* Get();
       __host__ __device__ int Size();
 
+      __host__ __device__ unsigned int HashCode();
+
    private:
       __host__ __device__ void Copy(char const *);
 
@@ -79,7 +81,7 @@ namespace String
    __host__ __device__ bool AreEqual(char const * const a, char const * const b);
    __host__ __device__ bool StartsWith(char* src, char* target);
 
-   struct Compare
+   struct CompareFcn
    {
       __host__ __device__ inline bool operator() (const String& lhs, const String& rhs)
       {
@@ -87,11 +89,11 @@ namespace String
       }
    };
 
-   struct HashFch
+   struct HashFcn
    {
       __host__ __device__ inline unsigned int operator() (String& s)
       {
-         return Hasher::Hash(s.Get(), s.Size());
+         return s.HashCode();
       }
    };
 }

@@ -69,8 +69,8 @@ namespace MapTest
       printf("MapTest::TestInteger() completed\n");
    }
 
-   typedef Map::Map<String::String, double, String::Compare, Comparator::DoubleCompareFcn, String::HashFch, Hasher::DoubleHashFcn> StringTestType;
-   typedef Map::Iterator<String::String, double, String::Compare, Comparator::DoubleCompareFcn, String::HashFch, Hasher::DoubleHashFcn> StringTestTypeItr;
+   typedef Map::Map<String::String, double, String::CompareFcn, Comparator::DoubleCompareFcn, String::HashFcn, Hasher::DoubleHashFcn> StringTestType;
+   typedef Map::Iterator<String::String, double, String::CompareFcn, Comparator::DoubleCompareFcn, String::HashFcn, Hasher::DoubleHashFcn> StringTestTypeItr;
 
    __device__ StringTestType makeMap()
    {
@@ -267,8 +267,8 @@ namespace MapTest
    //   return true;
    //}
 
-   typedef Map::Map<String::String, TestClass, String::Compare, TestClassCompare, String::HashFch, TestClassHashFcn> MapTestT;
-   typedef Map::Iterator<String::String, TestClass, String::Compare, TestClassCompare, String::HashFch, TestClassHashFcn> MapTestTItr;
+   typedef Map::Map<String::String, TestClass, String::CompareFcn, TestClassCompare, String::HashFcn, TestClassHashFcn> MapTestT;
+   typedef Map::Iterator<String::String, TestClass, String::CompareFcn, TestClassCompare, String::HashFcn, TestClassHashFcn> MapTestTItr;
 
    __device__ void MapTest::TestMapOfMap()
    {

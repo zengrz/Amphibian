@@ -62,9 +62,7 @@ namespace String
    __host__ __device__ int String::Size()
    {
       int c = 0;
-      while (str[c] != NULL) {
-         ++c;
-      }
+      while (str[c++] != NULL);
       return c;
    }
 
@@ -80,6 +78,11 @@ namespace String
          str[k] = s[k];
       }
       str[k] = NULL;
+   }
+
+   __host__ __device__ unsigned int String::HashCode()
+   {
+      return Hasher::Hash(str, Size());
    }
 
    __host__ __device__ void IToA(char* d, int n, int maxArrayLen)

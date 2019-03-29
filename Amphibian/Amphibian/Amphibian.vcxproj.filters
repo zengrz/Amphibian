@@ -6,6 +6,9 @@
     <CudaCompile Include="Hasher.cu" />
     <CudaCompile Include="Tests\MapTest.cu" />
     <CudaCompile Include="Tests\SetTest.cu" />
+    <CudaCompile Include="Tests\HasherTest.cu" />
+    <CudaCompile Include="Tests\LinkedListTest.cu" />
+    <CudaCompile Include="Tests\StringTest.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="String.cuh" />
@@ -15,5 +18,8 @@
     <ClInclude Include="Map.cuh" />
     <ClInclude Include="Tests\MapTest.cuh" />
     <ClInclude Include="Tests\SetTest.cuh" />
+    <ClInclude Include="Tests\HasherTest.cuh" />
+    <ClInclude Include="Tests\LinkedListTest.cuh" />
+    <ClInclude Include="Tests\StringTest.cuh" />
   </ItemGroup>
 </Project>

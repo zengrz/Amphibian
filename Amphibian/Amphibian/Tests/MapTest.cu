@@ -287,4 +287,28 @@ namespace MapTest
 
       printf("MapTest::TestMapOfMap() completed\n");
    }
+
+   __device__ void MapTest::TestAggregate()
+   {
+      StringTestType t;
+      double v0 = 0.1, v1 = 0.5, v2 = 100;
+      t.Put(String::String("A"), v0);
+      t.Put(String::String("B"), v1);
+      t.Put(String::String("C"), v2);
+
+      double ret1 = t.Aggregate([](double a) {return a*a; });
+      double ret2 = t.Aggregate([](double a) {return a*a; });
+      double ret3 = t.Aggregate([](double a) {return a*a; });
+      double ans = 0.1*0.1 + 0.5*0.5 + 100 * 100;
+      if (ret1 != ans) {
+         printf("wrong : %lf, %lf", ret1, ans);
+      }
+      if (ret2 != ans) {
+         printf("wrong : %lf, %lf", ret2, ans);
+      }
+      if (ret3 != ans) {
+         printf("wrong : %lf, %lf", ret3, ans);
+      }
+      printf("MapTest::TestAggregate() completed\n");
+   }
 }

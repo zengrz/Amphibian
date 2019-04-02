@@ -9,3 +9,6 @@ Amphibian is an initiative to build a library of data structures and algorithms 
   year={2019}
 }
 ```
+OS: Ubuntu Linux 16.04, Windows 10
+
+Toolset: CUDA V8.0.64, VS 2013, g++ 5.4

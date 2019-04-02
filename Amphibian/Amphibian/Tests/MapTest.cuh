@@ -15,6 +15,7 @@ namespace MapTest
       __device__ void TestInteger();
       __device__ void TestString();
       __device__ void TestMapOfMap();
+      __device__ void TestAggregate();
 
       template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
       __device__ Map::Map<K, V, KCompare, VCompare, KHasher, VHasher> CreateMapA(K& k, V& v)

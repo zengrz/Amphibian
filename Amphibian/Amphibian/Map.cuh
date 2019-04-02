@@ -47,7 +47,7 @@ namespace Map
       __host__ __device__ void RemoveAll();
       __host__ __device__ bool IsEmpty();
       __host__ __device__ int Size();
-      __host__ __device__ V Aggregate(V(*fcn)(V));
+      __host__ __device__ double Aggregate(double(*fcn)(double));
       //__host__ __device__ LinkedListKV::Node<K, V>* AsList();
 
       //__host__ __device__ Hasher::pHasher GetHasher(); // DEBUGGING PURPOSES
@@ -307,9 +307,9 @@ namespace Map
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   __host__ __device__ V Map<K, V, KCompare, VCompare, KHasher, VHasher>::Aggregate(V(*fcn)(V))
+   __host__ __device__ double Map<K, V, KCompare, VCompare, KHasher, VHasher>::Aggregate(double(*fcn)(double))
    {
-      V res;
+      double res = 0;
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          auto itr = buckets[k];
          while (itr != NULL) {

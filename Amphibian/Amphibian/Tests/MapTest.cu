@@ -1,6 +1,6 @@
 #include "MapTest.cuh"
 
-#include "..\String.cuh"
+#include "String.cuh"
 
 #include <math.h>
 
@@ -55,13 +55,13 @@ namespace MapTest
       }
       AssertEqual(c2, 3);
 
-      auto m3 = m2;
+      IntTestType m3 = m2;
       AssertEqual(m3.Size(), 3);
       int k2 = 2, v2 = 3;
       m3.Put(k2, v2);
       AssertEqual(m3.Size(), 3);
-      auto h2 = m2.HashCode();
-      auto h3 = m3.HashCode();
+      unsigned int h2 = m2.HashCode();
+      unsigned int h3 = m3.HashCode();
       if (h2 != h3) {
          printf("HashCodes are different: %d, %d\n", h2, h3);
       }
@@ -76,12 +76,7 @@ namespace MapTest
    {
       StringTestType map;
       double v0 = 1, v1 = 2, v2 = 3, v3 = 4, v4 = 5;
-      String::String
-         A = String::String("A"),
-         B = String::String("B"),
-         C = String::String("C"),
-         D = String::String("D"),
-         E = String::String("E");
+      String::String A("A"), B("B"), C("C"), D("D"), E("E");
       map.Put(A, v0);
       map.Put(B, v1);
       map.Put(C, v2);
@@ -94,12 +89,7 @@ namespace MapTest
    {
       StringTestType m1;
       double v0 = 1, v1 = 2, v2 = 3, v3 = 4;
-      String::String
-         A = String::String("A"),
-         B = String::String("B"),
-         C = String::String("C"),
-         D = String::String("D"),
-         E = String::String("E");
+      String::String A("A"), B("B"), C("C"), D("D"), E("E");
       m1.Put(A, v0);
       m1.Put(B, v1);
 
@@ -148,7 +138,7 @@ namespace MapTest
 
       StringTestType map4;
       double v5 = ::sqrt(0.05), v6 = ::sqrt(0.04);
-      String::String V1 = String::String("V1"), V2 = String::String("V2");
+      String::String V1("V1"), V2("V2");
       map4.Put(V1, v5);
       map4.Put(V2, v6);
 
@@ -162,7 +152,7 @@ namespace MapTest
       AssertEqual(map4.Size(), 2);
       AssertEqual(c4, 2);
 
-      auto m5 = map4;
+      StringTestType m5 = map4;
       if (!(m5 == map4)) {
          printf("maps are different\n");
       }
@@ -179,7 +169,7 @@ namespace MapTest
          itr5.Next();
       }
 
-      auto m6 = makeMap();
+      StringTestType m6 = makeMap();
       StringTestTypeItr itr6(m6);
       while (itr6.HasNext()) {
          //printf("(%s, %lf) ", itr6.GetKey().Get(), itr6.GetValue());
@@ -188,10 +178,6 @@ namespace MapTest
       //printf("\n");
       
       printf("MapTest::TestString() completed\n");
-   }
-
-   __device__ static bool doubleCmp(double& a, double& b) {
-      return a == b;
    }
 
    class TestClass
@@ -221,52 +207,6 @@ namespace MapTest
       }
    };
 
-   //__device__  bool AreEqualTestClass(TestClass& a, TestClass& b)
-   //{
-   //   if (&a == &b) return true;
-   //   //typedef bool(*pAreEqualStrings)(String::String&, String::String&);
-   //   //pAreEqualStrings fcnptr = String::AreEqual;
-   //   //printf("%p, %p\n", a.m.GetHasher(), Hasher::APHash);
-   //   //printf("%p, %p\n", a.m.GetKeyCmp(), fcnptr);
-   //   //printf("%p, %p\n", a.m.GetValCmp(), doubleCmp);
-
-   //   //unsigned int tmp1 = 1;
-   //   //auto h1 = Hasher::Hash((char*)&tmp1, sizeof(unsigned int));
-   //   //unsigned int tmp2 = 1;
-   //   //auto h2 = Hasher::APHash((char*)&tmp2, sizeof(unsigned int));
-   //   //printf("value: (%d, %u), (%d, %u)\n", tmp1, h1, tmp2, h2);
-
-   //   //auto vcmp = a.m.GetValCmp();
-   //   //auto vcmp = doubleCmp;
-   //   //double v1 = 1, v2 = 1;
-   //   //if (vcmp(v1, v2)) {
-   //   //   printf("AAAAAAAA\n");
-   //   //}
-
-   //   //printf("a size: %d\n", a.m.Size());
-   //   //printf("b size: %d\n", b.m.Size());
-   //   StringTestTypeItr itra(a.GetMap());
-   //   //printf("A:\n");
-   //   while (itra.HasNext()) {
-   //      auto k = itra.GetKey();
-   //      auto v = itra.GetValue();
-
-   //      //printf("%s %lf\n", k.Get(), v);
-   //      if (!b.GetMap().ContainsKey(k)) return false;
-   //      //if (v != b.m.GetValue(k)) return false;
-   //      itra.Next();
-   //   }
-   //   //printf("B:\n");
-   //   //Map::Iterator<String::String, double> itrb(b.m);
-   //   //while (itrb.HasNext()) {
-   //   //   auto k = itrb.GetKey();
-   //   //   auto v = itrb.GetValue();
-   //   //   printf("%s %lf\n", k.Get(), v);
-   //   //   itrb.Next();
-   //   //}
-   //   return true;
-   //}
-
    typedef Map::Map<String::String, TestClass, String::CompareFcn, TestClassCompare, String::HashFcn, TestClassHashFcn> MapTestT;
    typedef Map::Iterator<String::String, TestClass, String::CompareFcn, TestClassCompare, String::HashFcn, TestClassHashFcn> MapTestTItr;
 
@@ -277,13 +217,14 @@ namespace MapTest
       TestClass b;
 
       double v1 = 1.2, v2 = 1.2, v3 = 3.3;
-
-      a.GetMap().Put(String::String("A1"), v1);
-      a.GetMap().Put(String::String("A2"), v2);
-      a.GetMap().Put(String::String("A3"), v3);
-      b.GetMap().Put(String::String("B1"), v1);
-      m1.Put(String::String("A"), a);
-      m1.Put(String::String("B"), b);
+      String::String s0("A1"), s1("A2"), s2("A3"), s3("B1");
+      String::String s4("A"), s5("B");
+      a.GetMap().Put(s0, v1);
+      a.GetMap().Put(s1, v2);
+      a.GetMap().Put(s2, v3);
+      b.GetMap().Put(s3, v1);
+      m1.Put(s4, a);
+      m1.Put(s5, b);
 
       printf("MapTest::TestMapOfMap() completed\n");
    }

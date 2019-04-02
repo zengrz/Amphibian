@@ -24,7 +24,7 @@ namespace Set
    public:
       __host__ __device__ Set();
       __host__ __device__ Set(const Set&);
-      __host__ __device__ Set& Set::operator=(const Set&);
+      __host__ __device__ Set& operator=(const Set&);
       __host__ __device__ ~Set();
 
       __host__ __device__ bool operator==(Set&);
@@ -69,7 +69,7 @@ namespace Set
    template<typename T, typename TCompare, typename THasher>
    __host__ __device__ Set<T, TCompare, THasher>& Set<T, TCompare, THasher>::operator=(const Set<T, TCompare, THasher>& other)
    {
-      if (this == &other) return;
+      if (this == &other) return *this;
       ClearAndCopy(other);
       return *this;
    }
@@ -83,10 +83,11 @@ namespace Set
    template<typename T, typename TCompare, typename THasher>
    __host__ __device__ bool Set<T, TCompare, THasher>::operator==(Set<T, TCompare, THasher>& other)
    {
+      // TODO: could be faster if just check the buckets or hash, without calling exists, since hash function is standardized
       for (int k = 0; k < NUM_BUCKETS; ++k) {
-         auto itr = buckets[k];
+         LinkedList::Node<T>* itr = buckets[k];
          while (itr != NULL) {
-            auto v0 = itr->GetValue();
+            T v0 = itr->GetValue();
             if (!other.Exists(v0)) {
                return false;
             }
@@ -110,9 +111,9 @@ namespace Set
       RemoveAll();
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          // LinkedListKV::DeepCopy(&buckets, other.buckets[k]); hash function may be different
-         auto itr = other.buckets[k];
+         LinkedList::Node<T>* itr = other.buckets[k];
          while (itr != NULL) {
-            auto v = itr->GetValue();
+            T v = itr->GetValue();
             Put(v);
             itr = itr->GetNext();
          }
@@ -139,9 +140,9 @@ namespace Set
    __host__ __device__ void Set<T, TCompare, THasher>::Add(Set<T, TCompare, THasher>& other)
    {
       for (int k = 0; k < NUM_BUCKETS; ++k) {
-         auto itr = other.buckets[k];
+         LinkedList::Node<T>* itr = other.buckets[k];
          while (itr != NULL) {
-            auto v = itr->GetValue();
+            T v = itr->GetValue();
             Put(v);
             itr = itr->GetNext();
          }
@@ -170,7 +171,7 @@ namespace Set
    {
       int c = 0;
       for (int k = 0; k < NUM_BUCKETS; ++k) {
-         auto itr = buckets[k];
+         LinkedList::Node<T>* itr = buckets[k];
          while (itr != NULL) {
             ++c;
             itr = itr->GetNext();
@@ -314,12 +315,13 @@ namespace Set
       return bucket != -1;
    }
 
-
    template<typename T, typename TCompare, typename THasher>
    __host__ __device__ T& Iterator<T, TCompare, THasher>::GetValue()
    {
-      T blank;
-      return (bucket == -1) ? blank : ptr->GetValue();
+      if (bucket == -1 || ptr == NULL) {
+         printf("Illegal call to set iterator GetValue(): NULL pointer, no more element");
+      }
+      return ptr->GetValue();
    }
 }
 

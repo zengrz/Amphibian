@@ -1,4 +1,4 @@
-#include "..\String.cuh"
+#include "String.cuh"
 
 
 namespace StringTest

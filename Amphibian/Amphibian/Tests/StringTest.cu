@@ -35,28 +35,33 @@ namespace StringTest
       assertTrue(String::AToI("123") == 123);
       assertTrue(String::AToI("-123") == -123);
       assertTrue(String::AToI("-2147483647") == -2147483647);
+      
       printf("StringTest::AtoITest() completed\n");
    }
 
    __host__ __device__ void ItoATest()
    {
-      char num[16] = { NULL };
-      String::IToA(num, 0, 16);
+      const int MAX_LEN = 16;
+      char num[MAX_LEN];
+      memset(num, NULL_CHAR, MAX_LEN);
+
+      String::IToA(num, 0, MAX_LEN);
       assertTrue(String::AreEqual(num, "0"));
-      String::IToA(num, 1, 16);
+      String::IToA(num, 1, MAX_LEN);
       assertTrue(String::AreEqual(num, "1"));
-      String::IToA(num, 12, 16);
+      String::IToA(num, 12, MAX_LEN);
       assertTrue(String::AreEqual(num, "12"));
-      String::IToA(num, 123, 16);
+      String::IToA(num, 123, MAX_LEN);
       assertTrue(String::AreEqual(num, "123"));
-      String::IToA(num, -1, 16);
+      String::IToA(num, -1, MAX_LEN);
       assertTrue(String::AreEqual(num, "-1"));
-      String::IToA(num, -12, 16);
+      String::IToA(num, -12, MAX_LEN);
       assertTrue(String::AreEqual(num, "-12"));
-      String::IToA(num, -123, 16);
+      String::IToA(num, -123, MAX_LEN);
       assertTrue(String::AreEqual(num, "-123"));
-      String::IToA(num, -2147483647, 16);
+      String::IToA(num, -2147483647, MAX_LEN);
       assertTrue(String::AreEqual(num, "-2147483647"));
+
       printf("StringTest::ItoATest() completed\n");
    }
 

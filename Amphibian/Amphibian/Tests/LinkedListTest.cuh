@@ -1,7 +1,7 @@
 #ifndef _LINKED_LIST_TEST_CUH_
 #define _LINKED_LIST_TEST_CUH_
 
-#include "..\LinkedList.cuh"
+#include "LinkedList.cuh"
 
 #include <cuda_runtime.h>
 
@@ -16,7 +16,7 @@ namespace LinkedListTest
    public:
       __device__ LinkedListTest();
       __device__ void InsertionTest();
-      __device__ void TestAddAllAsSet();
+      // __device__ void TestAddAllAsSet();
    };
 }
 

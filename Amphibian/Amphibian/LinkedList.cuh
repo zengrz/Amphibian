@@ -95,7 +95,7 @@ namespace LinkedList
    __host__ __device__ void DeepCopy(Node<T>** newHeadAddr, Node<T>* head)
    {
       while (head != NULL) {
-         auto v = head->GetValue();
+         T v = head->GetValue();
          InsertNext<T>(newHeadAddr, v);
          newHeadAddr = (*newHeadAddr)->GetNextAddr();
          head = head->GetNext();
@@ -145,7 +145,7 @@ namespace LinkedList
    {
       TCompare cmp;
       while (*head != NULL) {
-         auto tmpK = (*head)->GetValue();
+         T tmpK = (*head)->GetValue();
          if (cmp(tmpK, k)) {
             T ret;
             RemoveHead(head, ret);
@@ -163,7 +163,7 @@ namespace LinkedList
    {
       TCompare cmp;
       while (head != NULL) {
-         auto tmpV = head->GetValue();
+         T tmpV = head->GetValue();
          if (cmp(tmpV, target)) {
             return true;
          }
@@ -190,8 +190,8 @@ namespace LinkedList
          Node<T>* resHead = *res;
          bool found = false;
          while (resHead != NULL) {
-            auto tmpV1 = resHead->GetValue();
-            auto tmpV2 = other->GetValue();
+            T tmpV1 = resHead->GetValue();
+            T tmpV2 = other->GetValue();
             if (cmp(tmpV1, tmpV2)) {
                found = true;
                break;
@@ -199,7 +199,7 @@ namespace LinkedList
             resHead = resHead->GetNext();
          }
          if (!found) {
-            auto v = other->GetValue();
+            T v = other->GetValue();
             InsertHead(res, v);
          }
          other = other->GetNext();
@@ -220,7 +220,7 @@ namespace LinkedList
       THasher hasher;
       unsigned int res = 0;
       while (list != NULL) {
-         auto v = list->GetValue();
+         T v = list->GetValue();
          res += hasher(v);
          list = list->GetNext();
       }
@@ -313,8 +313,8 @@ namespace LinkedListKV
       VHasher vhasher;
       unsigned int res = 0;
       while (list != NULL) {
-         auto k = list->GetKey();
-         auto v = list->GetValue();
+         KeyT k = list->GetKey();
+         ValueT v = list->GetValue();
          res += khasher(k);
          res += vhasher(v);
          list = list->GetNext();
@@ -381,7 +381,7 @@ namespace LinkedListKV
    {
       KCompare kcmp;
       while (*head != NULL) {
-         auto tmpK = (*head)->GetKey();
+         KeyT tmpK = (*head)->GetKey();
          if (kcmp(tmpK, k)) {
             ValueT ret;
             RemoveHead(head, ret);
@@ -399,7 +399,7 @@ namespace LinkedListKV
    {
       KCompare kcmp;
       while (head != NULL) {
-         auto v = head->GetKey();
+         KeyT v = head->GetKey();
          if (kcmp(v, target)) {
             ret = head->GetValue();
             return true;
@@ -412,7 +412,6 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT, typename KCompare>
    __host__ __device__ bool ContainsKey(Node<KeyT, ValueT>* head, KeyT& k)
    {
-      KCompare kcmp;
       ValueT v;
       return GetValue<KeyT, ValueT, KCompare>(head, k, v);
    }
@@ -474,7 +473,6 @@ namespace LinkedListKV
    template<typename KeyT, typename ValueT>
    __host__ __device__ void MapVal(ValueT& v, Node<KeyT, ValueT>* head, void(*mapper)(ValueT&, ValueT&))
    {
-      int sz = 0;
       while (head != NULL) {
          head->MapVal(v, mapper);
          head = head->GetNext();

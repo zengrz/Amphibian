@@ -1,7 +1,7 @@
 #include "SetTest.cuh"
 
-#include "..\Set.cuh"
-#include "..\String.cuh"
+#include "Set.cuh"
+#include "String.cuh"
 
 #include <stdio.h>
 
@@ -9,7 +9,8 @@ namespace SetTest
 {
    struct IntCompare
    {
-      __device__ inline bool operator() (const int& lhs, const int& rhs) {
+      __device__ inline bool operator() (const int& lhs, const int& rhs)
+      {
          if (&rhs == &lhs) return true;
          return lhs == rhs;
       }
@@ -126,18 +127,21 @@ namespace SetTest
          set2.Put(k);
       }
 
-      auto h1 = set1.HashCode();
-      auto h2 = set2.HashCode();
+      unsigned int h1 = set1.HashCode();
+      unsigned int h2 = set2.HashCode();
       if (h1 != h2) {
          printf("HashCodes are different: %u, %u", h1, h2);
       }
 
       printf("SetTest::TestInt2() completed.\n");
    }
-
+   
+   typedef Set::Set<String::String, String::CompareFcn, String::HashFcn> StringTestT;
+   typedef Set::Iterator<String::String, String::CompareFcn, String::HashFcn> StringTestTItr;
+   
    __device__ void SetTest::TestString()
    {
-      Set::Set<String::String, String::CompareFcn, String::HashFcn> set;
+      StringTestT set;
 
       String::String a("a");
       String::String b("b");
@@ -168,44 +172,45 @@ namespace SetTest
          printf("exists: %s\n", d.Get());
       }
 
-      Set::Iterator<String::String, String::CompareFcn, String::HashFcn> itr(set);
+      StringTestTItr itr(set);
       while (itr.HasNext()) {
          //printf("%s ", itr.GetValue().Get());
          itr.Next();
       }
       //printf("\n");
 
-      auto set2 = set;
-      set2.Put(String::String("XYZ"));
+      StringTestT set2 = set;
+      String::String xyz("XYZ");
+      set2.Put(xyz);
 
       if (!(set == set2)) {
          printf("sets are different: %d, %d\n", set.HashCode(), set2.HashCode());
       }
 
       int c2 = 0;
-      Set::Iterator<String::String, String::CompareFcn, String::HashFcn> itr2(set2);
-while (itr2.HasNext()) {
-   //printf("%s ", itr2.GetValue().Get());
-   ++c2;
-   itr2.Next();
-}
-//printf("\n");
-if (c2 != set2.Size()) {
-   printf("different sizes: (%d, %d)", c2, set2.Size());
-}
+      StringTestTItr itr2(set2);
+      while (itr2.HasNext()) {
+         //printf("%s ", itr2.GetValue().Get());
+         ++c2;
+         itr2.Next();
+      }
+      //printf("\n");
+      if (c2 != set2.Size()) {
+         printf("different sizes: (%d, %d)", c2, set2.Size());
+      }
 
-printf("SetTest::TestString() completed.\n");
+      printf("SetTest::TestString() completed.\n");
    }
 
    class ClassSet
    {
    public:
       __host__ __device__ ClassSet() {}
-      __host__ __device__ ClassSet(Set::Set<String::String, String::CompareFcn, String::HashFcn>& s) : s(s) {}
-      __host__ __device__ Set::Set<String::String, String::CompareFcn, String::HashFcn>& GetSet() { return s; }
+      __host__ __device__ ClassSet(StringTestT& s) : s(s) {}
+      __host__ __device__ StringTestT& GetSet() { return s; }
 
    private:
-      Set::Set<String::String, String::CompareFcn, String::HashFcn> s;
+      StringTestT s;
    };
 
    struct ClassSetCompare
@@ -238,10 +243,13 @@ printf("SetTest::TestString() completed.\n");
       }
    };
 
+   typedef Set::Set<ClassSet, ClassSetCompare, ClassSetHash> SetOfSetT;
+   typedef Set::Iterator<ClassSet, ClassSetCompare, ClassSetHash> SetOfSetTItr;
+
    __device__ void SetTest::TestSetOfSetOfString()
    {
-      Set::Set<String::String, String::CompareFcn, String::HashFcn> set0, set1;
-      String::String str0 = "A", str1 = "B", str2 = "C";
+      StringTestT set0, set1;
+      String::String str0("A"), str1("B"), str2("C");
       set0.Put(str0);
       set0.Put(str1);
       set1.Put(str2);
@@ -249,31 +257,31 @@ printf("SetTest::TestString() completed.\n");
       ClassSet cs0(set0);
       ClassSet cs1(set1);
 
-      Set::Set<ClassSet, ClassSetCompare, ClassSetHash> scs;
+      SetOfSetT scs;
       scs.Put(cs0);
       scs.Put(cs1);
-      //printf("scs: %d\n", scs.Size());
+      printf("scs: %d\n", scs.Size());
 
-      Set::Iterator<ClassSet, ClassSetCompare, ClassSetHash> itr1(scs);
+      SetOfSetTItr itr1(scs);
       while (itr1.HasNext()) {
-         auto cstmp = itr1.GetValue();
-         //printf("itr1: %d\n", cstmp.GetSet().Size());
+         ClassSet cstmp = itr1.GetValue();
+         // printf("itr1: %d\n", cstmp.GetSet().Size());
 
-         auto tmpset = cstmp.GetSet();
-         Set::Iterator<String::String, String::CompareFcn, String::HashFcn> itr2(tmpset);
+         StringTestT tmpset = cstmp.GetSet();
+         StringTestTItr itr2(tmpset);
          while (itr2.HasNext()) {
-            //printf("%s ", itr2.GetValue().Get());
+            // printf("%s ", itr2.GetValue().Get());
             itr2.Next();
          }
-         //printf("\n");
+         // printf("\n");
          itr1.Next();
       }
 
-      Set::Set<String::String, String::CompareFcn, String::HashFcn> set2(set0);
+      StringTestT set2(set0);
       ClassSet cs2(set2);
-      auto tmpset = cs2.GetSet();
+      StringTestT tmpset = cs2.GetSet();
       //printf("cs2: %d\n", tmpset.Size());
-      Set::Iterator<String::String, String::CompareFcn, String::HashFcn> itr(tmpset);
+      StringTestTItr itr(tmpset);
       while (itr.HasNext()) {
          //printf("%s ", itr.GetValue().Get());
          itr.Next();

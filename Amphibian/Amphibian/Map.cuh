@@ -10,13 +10,12 @@
 #include <stdio.h>
 
 namespace Map
-{
+{     
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
    __constant__ static const int NUM_BUCKETS = 23;
 #else
    static const int NUM_BUCKETS = 23;
 #endif
-
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    class Iterator;
 
@@ -24,6 +23,8 @@ namespace Map
    class Map
    {
       friend class Iterator<K, V, KCompare, VCompare, KHasher, VHasher>;
+      typedef LinkedListKV::Node<K, V>* LinkedListKVPtr;
+
    public:
       __host__ __device__ Map();
       __host__ __device__ Map(const Map&);
@@ -56,9 +57,9 @@ namespace Map
 
    private:
       __host__ __device__ int unsigned GetBucketIdx(K k);
-      __host__ __device__ LinkedListKV::Node<K, V>* GetBucket(int); // DEBUGGING PURPOSES
+      __host__ __device__ LinkedListKVPtr GetBucket(int); // DEBUGGING PURPOSES
 
-      LinkedListKV::Node<K, V>* buckets[NUM_BUCKETS];
+      LinkedListKVPtr buckets[NUM_BUCKETS];
       KCompare kcmp;
       VCompare vcmp;
       KHasher khasher;
@@ -109,7 +110,7 @@ namespace Map
    {
       //printf("called =\n");
       if (&m == this) {
-         return;
+         return *this;
       }
       ClearAndCopy(m);
       return *this;
@@ -131,12 +132,12 @@ namespace Map
          return false;
       }
       for (int k = 0; k < NUM_BUCKETS; ++k) {
-         auto itr = other.buckets[k];
+         LinkedListKVPtr itr = other.buckets[k];
          while (itr != NULL) {
-            auto k1 = itr->GetKey();
+            K k1 = itr->GetKey();
             V v0, v1;
-            auto found0 = GetValue(k1, v0);
-            auto found1 = other.GetValue(k1, v1);
+            V found0 = GetValue(k1, v0);
+            V found1 = other.GetValue(k1, v1);
             if (found0 && !found1 || !found0 && found1) { // only one of the keys is NULL
                return false;
             }
@@ -165,10 +166,10 @@ namespace Map
       RemoveAll();
       for (int k = 0; k < NUM_BUCKETS; ++k) {
          // LinkedListKV::DeepCopy(&buckets, other.buckets[k]); hash function may be different
-         auto itr = other.buckets[k];
+         LinkedListKVPtr itr = other.buckets[k];
          while (itr != NULL) {
-            auto k = itr->GetKey();
-            auto v = itr->GetValue();
+            K k = itr->GetKey();
+            V v = itr->GetValue();
             Put(k, v);
             itr = itr->GetNext();
          }
@@ -195,7 +196,7 @@ namespace Map
    {
       Set::Set<K, KCompare, KHasher> res;
       for (int k = 0; k < NUM_BUCKETS; ++k) {
-         auto itr = buckets[k];
+         LinkedListKVPtr itr = buckets[k];
          while (itr != NULL) {
             res.Put(itr->GetKey());
             itr = itr->GetNext();
@@ -226,6 +227,11 @@ namespace Map
       }
    }
 
+   template<typename V>
+   __host__ __device__ V GetFirstParam(V& a, V& b) {
+      return a;
+   }
+
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ void Map<K, V, KCompare, VCompare, KHasher, VHasher>::Put(K& k, V& v)
    {
@@ -233,11 +239,11 @@ namespace Map
          LinkedListKV::InsertHead<K, V>(&buckets[GetBucketIdx(k)], k, v);
       }
       else {
-         LinkedListKV::Node<K, V>* bucketItr = buckets[GetBucketIdx(k)];
+         LinkedListKVPtr bucketItr = buckets[GetBucketIdx(k)];
          while (bucketItr != NULL) {
-            auto tmpK = bucketItr->GetKey();
+            K tmpK = bucketItr->GetKey();
             if (kcmp(tmpK, k)) {
-               bucketItr->MapVal(v, [](V& a, V& b) { return a; });
+               bucketItr->MapVal(v, GetFirstParam<V>);
                break;
             }
             bucketItr = bucketItr->GetNext();
@@ -291,7 +297,7 @@ namespace Map
    {
       int c = 0;
       for (int k = 0; k < NUM_BUCKETS; ++k) {
-         auto itr = buckets[k];
+         LinkedListKVPtr itr = buckets[k];
          while (itr != NULL) {
             ++c;
             itr = itr->GetNext();
@@ -301,7 +307,7 @@ namespace Map
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
-   __host__ __device__ LinkedListKV::Node<K, V>* Map<K, V, KCompare, VCompare, KHasher, VHasher>::GetBucket(int n)
+   __host__ __device__ Map<K, V, KCompare, VCompare, KHasher, VHasher>::LinkedListKVPtr Map<K, V, KCompare, VCompare, KHasher, VHasher>::GetBucket(int n)
    {
       return buckets[n];
    }
@@ -311,9 +317,9 @@ namespace Map
    {
       double res = 0;
       for (int k = 0; k < NUM_BUCKETS; ++k) {
-         auto itr = buckets[k];
+         LinkedListKVPtr itr = buckets[k];
          while (itr != NULL) {
-            auto v = itr->GetValue();
+            V v = itr->GetValue();
             res += fcn(v);
             itr = itr->GetNext();
          }
@@ -400,13 +406,19 @@ namespace Map
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ K Iterator<K, V, KCompare, VCompare, KHasher, VHasher>::GetKey()
    {
-      return (bucket == -1) ? NULL : ptr->GetKey();
+      if (bucket == -1 || ptr == NULL) {
+         printf("Illegal call to map iterator GetKey(): NULL pointer, no more element");
+      }
+      return ptr->GetKey();
    }
 
    template<typename K, typename V, typename KCompare, typename VCompare, typename KHasher, typename VHasher>
    __host__ __device__ V Iterator<K, V, KCompare, VCompare, KHasher, VHasher>::GetValue()
    {
-      return (bucket == -1) ? NULL : ptr->GetValue();
+      if (bucket == -1 || ptr == NULL) {
+         printf("Illegal call to map iterator GetValue(): NULL pointer, no more element");
+      }
+      return ptr->GetValue();
    }
 }
 

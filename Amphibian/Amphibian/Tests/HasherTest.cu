@@ -1,6 +1,6 @@
 #include "HasherTest.cuh"
 
-#include "..\Hasher.cuh"
+#include "Hasher.cuh"
 
 #include <stdio.h>
 
@@ -15,7 +15,7 @@ namespace HasherTest
 
    __device__ void TestOne()
    {
-      char* key = "abcdefghijklmnopqrstuvwxyz1234567890";
+      char const * key = "abcdefghijklmnopqrstuvwxyz1234567890";
 
       Equals(Hasher::RSHash(key, 36), 4097835502);
       Equals(Hasher::JSHash(key, 36), 1651003062);

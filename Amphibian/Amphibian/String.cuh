@@ -7,6 +7,8 @@
 #include <cuda_runtime.h>
 #include "LinkedList.cuh"
 
+#define NULL_CHAR '\0'
+
 namespace String
 {
 #if (defined(__CUDA_ARCH__) && (__CUDA_ARCH__ > 0))
@@ -38,12 +40,12 @@ namespace String
       char str[MAX_LEN];
    };
 
-   __host__ __device__ void IToA(char*, int, int maxArrayLen = 11 /* integer limit */);
-   __host__ __device__ int AToI(char*);
+   __host__ __device__ void IToA(char *, int, int maxArrayLen = 11 /* integer limit */);
+   __host__ __device__ int AToI(char const *);
    //__host__ __device__ float AToF(char*);
    //__host__ __device__ double AToD(char*);
    template<typename T>
-   __host__ __device__ T AToF(char* d)
+   __host__ __device__ T AToF(char const * d)
    {
       int mult = 1;
       int idx = 0;
@@ -71,7 +73,7 @@ namespace String
             }
          }
          ++idx;
-      } while (d[idx] != NULL);
+      } while (d[idx] != NULL_CHAR);
 
       return res*mult;
    }

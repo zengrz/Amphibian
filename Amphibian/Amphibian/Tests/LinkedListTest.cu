@@ -1,4 +1,5 @@
 #include "LinkedListTest.cuh"
+
 #include "String.cuh"
 
 #include <stdio.h>
@@ -58,6 +59,8 @@ namespace LinkedListTest
       PrintList(head2);
       LinkedList::RemoveAll(&head2);
       PrintList(head2);
+
+      printf("LinkedListTest::InsertionTest completed.\n");
    }
 
    // __device__ static bool AreEqual(LinkedListTestType& a, LinkedListTestType& b) { return a == b; }

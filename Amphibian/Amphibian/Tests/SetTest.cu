@@ -260,7 +260,7 @@ namespace SetTest
       SetOfSetT scs;
       scs.Put(cs0);
       scs.Put(cs1);
-      printf("scs: %d\n", scs.Size());
+      // printf("scs: %d\n", scs.Size());
 
       SetOfSetTItr itr1(scs);
       while (itr1.HasNext()) {

@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "Hasher.cuh"
+
 namespace String
 {
    __host__ __device__ bool AreEqual(char const * const a, char const * const b)
@@ -28,9 +30,9 @@ namespace String
       Copy("");
    }
 
-   __host__ __device__ String::String(String& s)
+   __host__ __device__ String::String(const String& s)
    {
-      Copy(s.Get());
+      Copy(s.str);
    }
 
    __host__ __device__ String::String(char const * s)
@@ -38,10 +40,10 @@ namespace String
       Copy(s);
    }
 
-   __host__ __device__ void String::operator=(String& s)
+   __host__ __device__ void String::operator=(const String& s)
    {
       if (&s == this) return;
-      Copy(s.Get());
+      Copy(s.str);
    }
 
    __host__ __device__ void String::operator=(char const * s)

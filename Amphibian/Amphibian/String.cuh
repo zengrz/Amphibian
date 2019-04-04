@@ -5,7 +5,6 @@
 #define _STRING_CUH_
 
 #include <cuda_runtime.h>
-#include "LinkedList.cuh"
 
 #define NULL_CHAR '\0'
 
@@ -21,10 +20,10 @@ namespace String
    {
    public:
       __host__ __device__ String();
-      __host__ __device__ String(String&);
+      __host__ __device__ String(const String&);
       __host__ __device__ String(char const *);
 
-      __host__ __device__ void operator=(String&);
+      __host__ __device__ void operator=(const String&);
       __host__ __device__ void operator=(char const *);
 
       __host__ __device__ bool operator==(const String&) const;

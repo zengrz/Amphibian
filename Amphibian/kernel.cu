@@ -30,8 +30,10 @@ __global__ void TestKernel()
    HasherTest::TestOne();
 
    StringTest::EmptyTest();
+   StringTest::TestOne();
    StringTest::ItoATest();
    StringTest::AtoFTest();
+   StringTest::AtoITest();
 
    LinkedListTest::LinkedListTest lltest;
    lltest.InsertionTest();

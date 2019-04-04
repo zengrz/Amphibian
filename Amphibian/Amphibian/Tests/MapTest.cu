@@ -233,9 +233,10 @@ namespace MapTest
    {
       StringTestType t;
       double v0 = 0.1, v1 = 0.5, v2 = 100;
-      t.Put(String::String("A"), v0);
-      t.Put(String::String("B"), v1);
-      t.Put(String::String("C"), v2);
+      String::String s0("A"), s1("B"), s2("C");
+      t.Put(s0, v0);
+      t.Put(s1, v1);
+      t.Put(s2, v2);
 
       double ret1 = t.Aggregate([](double a) {return a*a; });
       double ret2 = t.Aggregate([](double a) {return a*a; });

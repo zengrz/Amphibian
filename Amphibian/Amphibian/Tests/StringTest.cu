@@ -27,6 +27,18 @@ namespace StringTest
       printf("StringTest::EmptyTest() completed\n");
    }
 
+   __host__ __device__ void TestOne()
+   {
+      String::String a("a");
+      String::String a1 = a;
+      String::String a2(a);
+      assertTrue(a == a1);
+      assertTrue(a == a2);
+      assertTrue(a1 == a2);
+
+      printf("StringTest::TestOne() completed\n");
+   }
+
    __host__ __device__ void AtoITest()
    {
       assertTrue(String::AToI("0") == 0);

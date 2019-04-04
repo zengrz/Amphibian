@@ -12,3 +12,7 @@ Amphibian is an initiative to build a library of data structures and algorithms 
 OS: Ubuntu Linux 16.04, Windows 10
 
 Toolset: CUDA V8.0.64, VS 2013, g++ 5.4
+
+# FAQ
+How to use/compile without CUDA?
+http://cmake.3232098.n2.nabble.com/CMAKE-doesn-t-pass-NVCC-flags-td7597944.html

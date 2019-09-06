@@ -16,3 +16,5 @@ Toolset: CUDA V8.0.64, VS 2013, g++ 5.4
 Please note that this version of Amphibian is not currently being maintained. For an updated version, please check 
 
 https://github.com/zengrz/CudaMONSEL/tree/master/CudaMONSEL/CudaMONSEL/Amphibian
+
+and switch to the branch double-to-float.

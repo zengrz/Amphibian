@@ -13,7 +13,6 @@ OS: Ubuntu Linux 16.04, Windows 10
 
 Toolset: CUDA V8.0.64, VS 2013, g++ 5.4
 
-# FAQ
-How to use/compile without CUDA?
+Please note that this version of Amphibian is not currently being maintained. For an updated version, please check 
 
-http://cmake.3232098.n2.nabble.com/CMAKE-doesn-t-pass-NVCC-flags-td7597944.html
+https://github.com/zengrz/CudaMONSEL/tree/master/CudaMONSEL/CudaMONSEL/Amphibian
